@@ -276,7 +276,7 @@ resource "aws_codepipeline_webhook" "_" {
 }
 
 resource "github_repository_webhook" "_" {
-  repository = "${var.repo_owner}/${var.repo_name}"
+  repository = "${var.repo_name}"
   name       = "codepipeline"
   events     = ["push"]
   configuration {
