@@ -63,7 +63,7 @@ variable "buildspec" {
 # It is recommended you avoid using boolean values and use explicit strings
 variable "poll_source_changes" {
   type        = "string"
-  default     = "true"
+  default     = "false"
   description = "Periodically check the location of your source content and run the pipeline if changes are detected"
 }
 
@@ -123,4 +123,15 @@ variable "environment_variables" {
   }]
 
   description = "A list of maps, that contain both the key 'name' and the key 'value' to be used as additional environment variables for the build."
+}
+
+variable "github_webhook_changes" {
+  type        = "string"
+  default     = "true"
+  description = "Use webhooks in GitHub to automatically start my pipeline when a change occurs"
+}
+
+variable "webhook_secret" {
+  description = "The webhook secret to use for github. Required if github_webhook_changes is true"
+  default     = ""
 }

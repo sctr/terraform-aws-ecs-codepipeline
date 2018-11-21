@@ -258,6 +258,35 @@ resource "aws_codepipeline" "source_build_deploy" {
   }
 }
 
+resource "aws_codepipeline_webhook" "_" {
+  count           = "${var.github_webhook_changes == "true" ? 1 : 0}"
+  name            = "${var.namespace}-${var.name}-${var.branch}-webhook"
+  authentication  = "GITHUB_HMAC"
+  target_action   = "Source"
+  target_pipeline = "${aws_codepipeline.source_build_deploy.name}"
+
+  authentication_configuration {
+    secret_token = "${var.webhook_secret}"
+  }
+
+  filter {
+    json_path    = "$.ref"
+    match_equals = "refs/heads/{Branch}"
+  }
+}
+
+resource "github_repository_webhook" "_" {
+  repository = "${var.repo_owner}/${var.repo_name}"
+  name       = "codepipeline"
+  events     = ["push"]
+  configuration {
+    url          = "${aws_codepipeline_webhook._.url}"
+    content_type = "form"
+    insecure_ssl = true
+    secret       = "${var.webhook_secret}"
+  }
+}
+
 data "aws_caller_identity" "default" {}
 
 data "aws_region" "default" {}
